@@ -1,11 +1,31 @@
 import { App, Notice, TFile, requestUrl } from "obsidian";
-import type { NapkinTaggerSettings } from "./settings";
+import type { FluirSettings } from "./settings";
 import PROMPT_TEMPLATE from "../prompt.txt";
 
-function isTagged(content: string): boolean {
+const TAG_RE = /(?:^|\s)(#[a-z][a-z0-9-]*)/g;
+
+export function findTags(content: string): { hasTags: boolean; tags: string[] } {
+  // Check last non-empty line first (canonical format)
   const lines = content.trimEnd().split("\n");
   const last = lines[lines.length - 1]?.trim() ?? "";
-  return last.startsWith("#");
+  if (last.startsWith("#")) {
+    return {
+      hasTags: true,
+      tags: last.split(/\s+/).map((t) => t.replace(/^#/, "")),
+    };
+  }
+  // Check for inline tags anywhere in content
+  const matches = [...content.matchAll(TAG_RE)].map((m) =>
+    m[1]!.replace(/^#/, "")
+  );
+  if (matches.length > 0) {
+    return { hasTags: true, tags: matches };
+  }
+  return { hasTags: false, tags: [] };
+}
+
+function isTagged(content: string): boolean {
+  return findTags(content).hasTags;
 }
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -16,7 +36,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return chunks;
 }
 
-function getFilesInFolder(app: App, folder: string): TFile[] {
+export function getFilesInFolder(app: App, folder: string): TFile[] {
   return app.vault
     .getMarkdownFiles()
     .filter(
@@ -33,11 +53,8 @@ export async function collectExistingTags(
 
   for (const file of files) {
     const content = await app.vault.cachedRead(file);
-    const lines = content.trimEnd().split("\n");
-    const last = lines[lines.length - 1]?.trim() ?? "";
-    if (last.startsWith("#")) {
-      last.split(/\s+/).forEach((t) => tags.add(t.replace(/^#/, "")));
-    }
+    const found = findTags(content);
+    found.tags.forEach((t) => tags.add(t));
   }
 
   return tags;
@@ -68,7 +85,7 @@ function buildPrompt(ideas: string[], existingTags: Set<string>): string {
 }
 
 async function callOllama(
-  settings: NapkinTaggerSettings,
+  settings: FluirSettings,
   prompt: string
 ): Promise<Record<string, string[]>> {
   const response = await requestUrl({
@@ -93,7 +110,7 @@ async function callOllama(
 
 export async function tagFiles(
   app: App,
-  settings: NapkinTaggerSettings
+  settings: FluirSettings
 ): Promise<{ tagged: number; newTags: number; reused: number }> {
   const existingTags = await collectExistingTags(app, settings.folder);
   const untagged = await getUntaggedFiles(app, settings.folder);
@@ -107,7 +124,7 @@ export async function tagFiles(
   let newTags = 0;
   let reused = 0;
 
-  for (const batch of chunk(untagged, 20)) {
+  for (const batch of chunk(untagged, 5)) {
     const ideas = await Promise.all(
       batch.map(async (f, i) => {
         const text = (await app.vault.cachedRead(f)).trim();
@@ -121,10 +138,10 @@ export async function tagFiles(
     try {
       tags = await callOllama(settings, prompt);
     } catch (e) {
-      console.error("Napkin Tagger: Ollama error", e);
+      console.error("Fluir: Ollama error", e);
       const msg =
         e instanceof Error ? e.message : "Unknown error";
-      new Notice(`Napkin Tagger: Ollama error — ${msg}`);
+      new Notice(`Fluir: Ollama error — ${msg}`);
       continue;
     }
 
@@ -158,7 +175,7 @@ export async function tagFiles(
           }
         }
       } catch (e) {
-        console.error(`Napkin Tagger: failed to tag ${file.path}`, e);
+        console.error(`Fluir: failed to tag ${file.path}`, e);
       }
     }
   }
@@ -168,7 +185,7 @@ export async function tagFiles(
 
 export async function tagSingleFile(
   app: App,
-  settings: NapkinTaggerSettings,
+  settings: FluirSettings,
   file: TFile
 ): Promise<boolean> {
   const content = await app.vault.cachedRead(file);

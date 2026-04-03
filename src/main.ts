@@ -1,13 +1,15 @@
 import { Notice, Plugin, TFile } from "obsidian";
+import { ViewPlugin, EditorView } from "@codemirror/view";
 import {
   DEFAULT_SETTINGS,
-  NapkinTaggerSettingTab,
-  type NapkinTaggerSettings,
+  FluirSettingTab,
+  type FluirSettings,
 } from "./settings";
-import { tagFiles, tagSingleFile, collectExistingTags } from "./tagger";
+import { tagFiles, tagSingleFile } from "./tagger";
+import { TagNotesModal, BrowseModal, getFilesWithTag, getRandomNotes } from "./tag-modal";
 
-export default class NapkinTaggerPlugin extends Plugin {
-  settings: NapkinTaggerSettings = DEFAULT_SETTINGS;
+export default class FluirPlugin extends Plugin {
+  settings: FluirSettings = DEFAULT_SETTINGS;
   timers: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
   async onload() {
@@ -17,20 +19,71 @@ export default class NapkinTaggerPlugin extends Plugin {
       id: "tag-untagged-notes",
       name: "Tag untagged notes",
       callback: async () => {
-        new Notice("Napkin Tagger: Scanning...");
+        new Notice("Fluir: Scanning...");
         try {
           const result = await tagFiles(this.app, this.settings);
           new Notice(
             `Tagged ${result.tagged} notes. ${result.newTags} new tags, ${result.reused} reused.`
           );
         } catch (e) {
-          console.error("Napkin Tagger:", e);
+          console.error("Fluir:", e);
           new Notice(
-            `Napkin Tagger: ${e instanceof Error ? e.message : "Unknown error"}`
+            `Fluir: ${e instanceof Error ? e.message : "Unknown error"}`
           );
         }
       },
     });
+
+    // Reading view: intercept tag clicks
+    this.registerMarkdownPostProcessor((el) => {
+      for (const link of Array.from(el.querySelectorAll("a.tag"))) {
+        const href = link.getAttribute("href");
+        if (!href) continue;
+        const tag = href.replace(/^#/, "");
+        link.addEventListener("click", (evt) => {
+          evt.preventDefault();
+          evt.stopImmediatePropagation();
+          this.openTagModal(tag);
+        });
+      }
+    });
+
+    // Live preview: intercept tag clicks on cm-hashtag spans
+    const plugin = this;
+    this.registerEditorExtension(
+      ViewPlugin.fromClass(
+        class {
+          constructor(_view: EditorView) {}
+          destroy() {}
+        },
+        {
+          eventHandlers: {
+            click(evt: MouseEvent) {
+              const target = evt.target as HTMLElement;
+              if (!target.classList.contains("cm-hashtag")) return false;
+
+              let tag = "";
+              if (target.classList.contains("cm-hashtag-end")) {
+                tag = target.textContent ?? "";
+              } else if (target.classList.contains("cm-hashtag-begin")) {
+                const next = target.nextElementSibling;
+                if (next?.classList.contains("cm-hashtag-end")) {
+                  tag = next.textContent ?? "";
+                }
+              }
+
+              if (tag) {
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+                plugin.openTagModal(tag);
+                return true;
+              }
+              return false;
+            },
+          },
+        }
+      )
+    );
 
     this.registerEvent(
       this.app.vault.on("modify", (file) => {
@@ -53,17 +106,27 @@ export default class NapkinTaggerPlugin extends Plugin {
                 file
               );
               if (tagged) {
-                new Notice(`Napkin Tagger: Auto-tagged ${file.basename}`);
+                new Notice(`Fluir: Auto-tagged ${file.basename}`);
               }
             } catch (e) {
-              console.error("Napkin Tagger auto-tag:", e);
+              console.error("Fluir auto-tag:", e);
             }
           }, this.settings.delay * 1000)
         );
       })
     );
 
-    this.addSettingTab(new NapkinTaggerSettingTab(this.app, this));
+    this.addRibbonIcon("shuffle", "Fluir: Browse random notes", async () => {
+      const items = await getRandomNotes(this.app, this.settings.folder, 5);
+      new BrowseModal(this.app, items, (tag) => this.openTagModal(tag)).open();
+    });
+
+    this.addSettingTab(new FluirSettingTab(this.app, this));
+  }
+
+  async openTagModal(tag: string): Promise<void> {
+    const items = await getFilesWithTag(this.app, this.settings.folder, tag);
+    new TagNotesModal(this.app, tag, items, (t) => this.openTagModal(t)).open();
   }
 
   onunload() {

@@ -1,7 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import type NapkinTaggerPlugin from "./main";
+import type FluirPlugin from "./main";
 
-export interface NapkinTaggerSettings {
+export interface FluirSettings {
   folder: string;
   ollamaUrl: string;
   model: string;
@@ -9,7 +9,7 @@ export interface NapkinTaggerSettings {
   delay: number;
 }
 
-export const DEFAULT_SETTINGS: NapkinTaggerSettings = {
+export const DEFAULT_SETTINGS: FluirSettings = {
   folder: "ideas",
   ollamaUrl: "http://100.103.186.65:11434",
   model: "gemma4:e4b",
@@ -17,10 +17,10 @@ export const DEFAULT_SETTINGS: NapkinTaggerSettings = {
   delay: 30,
 };
 
-export class NapkinTaggerSettingTab extends PluginSettingTab {
-  plugin: NapkinTaggerPlugin;
+export class FluirSettingTab extends PluginSettingTab {
+  plugin: FluirPlugin;
 
-  constructor(app: App, plugin: NapkinTaggerPlugin) {
+  constructor(app: App, plugin: FluirPlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -34,7 +34,7 @@ export class NapkinTaggerSettingTab extends PluginSettingTab {
       .setDesc("Folder to scan for untagged notes")
       .addText((text) =>
         text
-          .setPlaceholder("napkin/ideas")
+          .setPlaceholder("ideas")
           .setValue(this.plugin.settings.folder)
           .onChange(async (value) => {
             this.plugin.settings.folder = value;

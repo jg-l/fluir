@@ -1,0 +1,135 @@
+/* Tag modal */
+.fluir-tag-modal {
+  padding: 8px 16px 16px;
+}
+
+.fluir-tag-header {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.fluir-empty {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Shared card styles */
+.fluir-card,
+.fluir-browse-card {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.fluir-card:hover {
+  border-color: var(--interactive-accent);
+}
+
+.fluir-card-body {
+  margin: 0;
+  font-size: 0.9em;
+  line-height: 1.6;
+  color: var(--text-normal);
+}
+
+/* Tag links */
+.fluir-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.fluir-tag-link {
+  font-size: 0.8em;
+  color: var(--text-accent);
+  cursor: pointer;
+  text-decoration: none;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--background-modifier-hover);
+}
+
+.fluir-tag-link:hover {
+  background: var(--background-modifier-border);
+}
+
+/* Browse modal */
+.fluir-browse-modal .modal-content {
+  padding: 16px 20px;
+}
+
+.fluir-browse-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.fluir-browse-counter {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+.fluir-browse-bookmark {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.fluir-browse-bookmark:hover {
+  color: var(--text-accent);
+  background: var(--background-modifier-hover);
+}
+
+.fluir-browse-card {
+  cursor: default;
+  margin-bottom: 12px;
+  min-height: 80px;
+}
+
+/* Nav buttons */
+.fluir-browse-nav {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.fluir-browse-btn {
+  padding: 6px 16px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.fluir-browse-btn:hover:not(:disabled) {
+  border-color: var(--interactive-accent);
+}
+
+.fluir-browse-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.fluir-browse-open {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+
+.fluir-browse-open:hover {
+  opacity: 0.9;
+}

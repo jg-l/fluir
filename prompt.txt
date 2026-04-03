@@ -12,7 +12,8 @@ EXISTING TAGS IN VAULT:
 {{EXISTING_TAGS}}
 
 Rules:
-- Lowercase, hyphenated format: self-awareness not SelfAwareness
+- Tags must only contain lowercase letters and hyphens: self-awareness not SelfAwareness not self_awareness
+- No apostrophes, periods, underscores, or special characters in tags
 - No generic tags like quote, idea, interesting, book
 - Context tags MUST come from the existing tags list
 - Combine all tags into one flat list per idea

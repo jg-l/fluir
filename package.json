@@ -1,5 +1,5 @@
 {
-  "name": "napkin-tagger",
+  "name": "fluir",
   "version": "1.0.0",
   "description": "Auto-tag notes with a local LLM via Ollama",
   "main": "main.js",
