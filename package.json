@@ -1,6 +1,6 @@
 {
   "name": "fluir",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Auto-tag notes with a local LLM via Ollama",
   "main": "main.js",
   "type": "module",

@@ -1,5 +1,5 @@
 import { Notice, Plugin, TFile } from "obsidian";
-import { ViewPlugin, EditorView } from "@codemirror/view";
+
 import {
   DEFAULT_SETTINGS,
   FluirSettingTab,
@@ -48,42 +48,27 @@ export default class FluirPlugin extends Plugin {
       }
     });
 
-    // Live preview: intercept tag clicks on cm-hashtag spans
-    const plugin = this;
-    this.registerEditorExtension(
-      ViewPlugin.fromClass(
-        class {
-          constructor(_view: EditorView) {}
-          destroy() {}
-        },
-        {
-          eventHandlers: {
-            click(evt: MouseEvent) {
-              const target = evt.target as HTMLElement;
-              if (!target.classList.contains("cm-hashtag")) return false;
+    // Live preview: intercept tag clicks on cm-hashtag spans (capture phase for mobile)
+    this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
+      const target = evt.target as HTMLElement;
+      if (!target.classList.contains('cm-hashtag')) return;
 
-              let tag = "";
-              if (target.classList.contains("cm-hashtag-end")) {
-                tag = target.textContent ?? "";
-              } else if (target.classList.contains("cm-hashtag-begin")) {
-                const next = target.nextElementSibling;
-                if (next?.classList.contains("cm-hashtag-end")) {
-                  tag = next.textContent ?? "";
-                }
-              }
-
-              if (tag) {
-                evt.preventDefault();
-                evt.stopImmediatePropagation();
-                plugin.openTagModal(tag);
-                return true;
-              }
-              return false;
-            },
-          },
+      let tag = '';
+      if (target.classList.contains('cm-hashtag-end')) {
+        tag = target.textContent ?? '';
+      } else if (target.classList.contains('cm-hashtag-begin')) {
+        const next = target.nextElementSibling;
+        if (next?.classList.contains('cm-hashtag-end')) {
+          tag = next.textContent ?? '';
         }
-      )
-    );
+      }
+
+      if (tag) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        this.openTagModal(tag);
+      }
+    }, { capture: true } as AddEventListenerOptions);
 
     this.registerEvent(
       this.app.vault.on("modify", (file) => {
