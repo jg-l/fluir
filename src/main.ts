@@ -116,8 +116,8 @@ export default class FluirPlugin extends Plugin {
       })
     );
 
-    this.addRibbonIcon("shuffle", "Fluir: Browse random notes", async () => {
-      const items = await getRandomNotes(this.app, this.settings.folder, 5);
+    this.addRibbonIcon("shuffle", "Fluir: Daily Flow", async () => {
+      const items = await getRandomNotes(this.app, this.settings.folder, 7);
       new BrowseModal(this.app, items, (tag) => this.openTagModal(tag)).open();
     });
 

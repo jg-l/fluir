@@ -6,9 +6,15 @@ An Obsidian plugin that auto-tags notes using a local LLM via Ollama. No cloud, 
 
 - **Auto-tag notes**: Scans a folder for untagged `.md` files, sends them to Ollama in batches, and appends `#tags` to each file
 - **Tag-aware**: Collects existing tags from your vault so the LLM can reuse them, connecting ideas across notes
-- **Browse random notes**: Ribbon icon shows 5 random notes one at a time, with clickable tags and a bookmark shortcut
+- **Daily Flow**: Ribbon icon shows 7 random notes one at a time, with clickable tags and a bookmark shortcut
 - **Tag click modal**: Clicking any `#tag` opens a modal with related notes instead of Obsidian's default search
 - **Auto-tag on save**: Optional — tags new notes automatically after a configurable delay
+
+## Usage
+
+1. Add notes to your `ideas` folder — short quotes, highlights, thoughts
+2. Run **Fluir: Tag untagged notes** from the command palette to tag them
+3. Hit the **Daily Flow** shuffle icon in the ribbon to browse 7 random notes, explore tags, and bookmark what resonates
 
 ## Setup
 
