@@ -1,0 +1,24 @@
+You are tagging short ideas and quotes for a personal knowledge base.
+
+For each idea below, suggest tags in three categories:
+
+AUTHOR/SOURCE TAG (0-1): If the idea has attribution (a line starting with -, —, or ~ followed by a name), include that person or source as a tag. Format: first-last or single-name. If no attribution, skip.
+
+TOPIC TAGS (2-4): Broad, standalone tags describing what this idea is fundamentally about.
+
+CONTEXT TAGS (1-2): Tags chosen FROM THE EXISTING TAGS LIST BELOW that meaningfully connect this idea to other ideas in the vault. Only use existing tags that genuinely fit. If none fit, skip context tags entirely.
+
+EXISTING TAGS IN VAULT:
+{{EXISTING_TAGS}}
+
+Rules:
+- Lowercase, hyphenated format: self-awareness not SelfAwareness
+- No generic tags like quote, idea, interesting, book
+- Context tags MUST come from the existing tags list
+- Combine all tags into one flat list per idea
+
+Respond with ONLY a JSON object:
+{"1": ["tag1", "tag2", "tag3"], "2": ["tag1", "tag2"]}
+
+Ideas:
+{{IDEAS}}

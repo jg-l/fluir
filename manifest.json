@@ -1,0 +1,9 @@
+{
+  "id": "napkin-tagger",
+  "name": "Napkin Tagger",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Auto-tag notes with a local LLM via Ollama",
+  "author": "You",
+  "isDesktopOnly": false
+}
