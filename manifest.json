@@ -1,7 +1,7 @@
 {
   "id": "fluir",
   "name": "Fluir",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minAppVersion": "1.0.0",
   "description": "Auto-tag and browse notes with a local LLM via Ollama",
   "author": "You",
